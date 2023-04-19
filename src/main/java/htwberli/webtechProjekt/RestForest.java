@@ -20,7 +20,7 @@ public class RestForest {
      String url = "https://api.openai.com/v1/chat/completions";
      HttpHeaders headers = new HttpHeaders();
      headers.setContentType(MediaType.APPLICATION_JSON);
-     headers.setBearerAuth("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");
+     headers.setBearerAuth("AuthKey");
      String message = "[{\"role\": \"user\", \"content\": \"Hello, how are you?\"}]";
 
      String model = "gpt-3.5-turbo";
