@@ -1,10 +1,14 @@
-package htwberli.webtechProjekt;
+package htwberli.webtechProjekt.messages;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class MessageContent {
+public class UserMessageContent {
+    @JsonProperty("id")
+    private long id;
     @JsonProperty("content")
     private String message;
+    @JsonProperty("from")
+    private String from;
 
     public String getMessage() {
         return message;
