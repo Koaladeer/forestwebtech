@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import htwberli.webtechProjekt.messages.AIMessage;
 import htwberli.webtechProjekt.messages.AIMessageEntity;
+import htwberli.webtechProjekt.messages.ChatMessage;
 import htwberli.webtechProjekt.messages.UserMessage;
 import htwberli.webtechProjekt.service.ForestService;
 import org.slf4j.Logger;
@@ -38,6 +39,12 @@ public class ForestController {
         return service.save(aiMessageEntity);
     }
 
+    @PostMapping("/chatmessages")
+    public ChatMessage createChatMessage(@RequestBody ChatMessage chatMessage) {
+        ChatMessage message = new ChatMessage();
+        return service.save(message);
+    }
+
 /*    @GetMapping("/messages/{id}")
     public AIMessageEntity getMessage(@PathVariable Long id) {
         logger.info("GET request on route things with {}", id);
@@ -56,48 +63,25 @@ public class ForestController {
         return service.getAllAIMessages();
     }
 
+
     @PostMapping("/api/chat")
     public Map<String, String> chatResponse(@RequestBody UserMessage request) throws Exception {
         // Parse the response from the VUE frontend and extract the userinput.
-        String content = request.getContent().getMessage();
-        System.out.println(content);
+        String userMessageContent = request.getContent().getContent();
+        /*System.out.println("id:"+request.getContent().getId());
+        System.out.println("role:"+request.getContent().getRole());
+        System.out.println("content:"+userMessageContent);*/
+        // Save the UserMessage to DB to use as context for the AI
+        service.save(request.getContent());
         // Build and return the response to the frontend
         Map<String, String> responseMap = new HashMap<>();
-        responseMap.put("reply", openAIConnection(content));
-        //System.out.println(responseMap.get("reply"));
+        responseMap.put("reply", service.openAIConnection(service.getContextMessages(request)));
+        System.out.println(responseMap.toString());
         return responseMap;
     }
 
     @GetMapping("/")
     public String root() {
         return "hello";
-    }
-
-    private String openAIConnection(String userMessage) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://api.openai.com/v1/chat/completions";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        //OPENAI Key
-        String openAIKey = System.getenv("OPENAI_API_KEY");
-        headers.setBearerAuth(openAIKey);
-        String message = "[{\"role\": \"user\", \"content\": \"" + userMessage + "\"}]";
-        String model = "gpt-3.5-turbo";
-        int maxTokens = 2000;
-        String requestBody = "{\"model\": \"" + model + "\", \"messages\": " + message + ", \"max_tokens\": " + maxTokens + "}";
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String response = restTemplate.postForObject(url, requestEntity, String.class);
-            JsonNode jsonNode = objectMapper.readTree(response);
-            //Todo fix json from personaChoice Button inputs...
-            String messageContent = jsonNode.get("choices").get(0).get("message").get("content").asText();
-            System.out.println(messageContent);
-            return messageContent;
-        } catch (Exception e) {
-            // Handle the error here
-            e.printStackTrace();
-        }
-        return "err";
     }
 }

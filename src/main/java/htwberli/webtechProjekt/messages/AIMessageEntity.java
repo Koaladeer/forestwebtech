@@ -12,6 +12,18 @@ public class AIMessageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("id")
     private Long id;
+    @JsonProperty("sId")
+    private Long sId;
+
+    public Long getsId() {
+        return sId;
+    }
+
+    public void setsId(Long sId) {
+        this.sId = sId;
+    }
+
+
     @JsonProperty("message")
     private String message;
 
@@ -26,6 +38,7 @@ public class AIMessageEntity {
     public AIMessageEntity(AIMessage aiMessage) {
         this.message = aiMessage.getContent();
         this.id = aiMessage.getId();
+        this.sId = aiMessage.getsId();
     }
 
     public AIMessageEntity() {
