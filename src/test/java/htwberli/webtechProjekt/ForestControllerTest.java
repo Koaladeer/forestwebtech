@@ -26,6 +26,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+/**
+ * Unit tests for the ForestController class.
+ */
 @WebMvcTest(ForestController.class)
 public class ForestControllerTest {
 
@@ -35,12 +38,23 @@ public class ForestControllerTest {
     @MockBean
     private ForestService forestService;
 
+    /**
+     * Test case for the greeting endpoint.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testGreeting() throws Exception {
         mockMvc.perform(get("/greeting"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("hello, World"));
     }
+
+    /**
+     * Test case for the getAllMessages endpoint.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testGetAllMessages() throws Exception {
         List<AIMessageEntity> aiMessageEntities = new ArrayList<>();
@@ -51,6 +65,12 @@ public class ForestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
+
+    /**
+     * Test case for the createChatMessage endpoint.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testCreateChatMessage() throws Exception {
         ChatMessage chatMessage = new ChatMessage();
@@ -65,6 +85,12 @@ public class ForestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(chatMessage.getId()));
     }
+
+    /**
+     * Test case for the deleteAIMessageEntity endpoint.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testDeleteAIMessageEntity() throws Exception {
         Long id = 1L;
@@ -73,6 +99,12 @@ public class ForestControllerTest {
                 .andExpect(status().isOk());
         verify(forestService, times(1)).deleteAIMessageByID(id);
     }
+
+    /**
+     * Test case for the chatResponse endpoint.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testChatResponse() throws Exception {
         UserMessage userMessage = new UserMessage();
@@ -91,7 +123,13 @@ public class ForestControllerTest {
 
     }
 
-
+    /**
+     * Converts an object to its JSON string representation.
+     *
+     * @param obj the object to convert
+     * @return the JSON string representation of the object
+     * @throws RuntimeException if an error occurs during JSON serialization
+     */
     private String asJsonString(Object obj) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
